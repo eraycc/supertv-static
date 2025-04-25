@@ -1533,7 +1533,7 @@
                   const homeVideoList = document.getElementById('homeVideoList');
                   homeVideoList.innerHTML = data.list.map(item => `
         <div class="search-result-card rounded-xl overflow-hidden cursor-pointer p-4" onclick="showDetails('${item.vod_apiname}','${item.vod_id}','${item.vod_name}')">
-            ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
+            ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="https://supertv.deno.dev/loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
             <div class="search-result-content">
                 <h3 class="search-result-title">${item.vod_name}</h3>
                 ${item.vod_apinickname ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：${item.vod_apinickname}</p>` : `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：未知</p>`}
@@ -1939,7 +1939,7 @@
       if (data.list && data.list.length > 0) {
           resultsDiv.innerHTML = data.list.map(item => `
               <div class="search-result-card rounded-xl overflow-hidden cursor-pointer p-4" onclick="showDetails('${item.vod_apiname}','${item.vod_id}','${item.vod_name}')">
-                  ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
+                  ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="https://supertv.deno.dev/loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
                   <div class="search-result-content">
                       <h3 class="search-result-title">${item.vod_name}</h3>
                       ${item.vod_apinickname ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：${item.vod_apinickname}</p>` : `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：未知</p>`}
