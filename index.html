@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="zh" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperTV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {}
+        }
+    }
+  </script>
+  <!--JQ图片懒加载-->
+  <script src="https://cdnjs.webstatic.cn/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.webstatic.cn/ajax/libs/jquery_lazyload/1.9.7/jquery.lazyload.js"></script>
+  <style>
+    :root {
+      --color-bg-primary: #f8fafc;
+      --color-bg-secondary: #f1f5f9;
+      --color-text-primary: #0f172a;
+      --color-text-secondary: #334155;
+      --color-accent: #6366f1;
+      --color-border: #e2e8f0;
+      --color-card-bg: #ffffff;
+      --color-card-border: #e2e8f0;
+      --color-btn-primary: #6366f1;
+      --color-btn-hover: #4f46e5;
+      --color-gradient-from: #1e293b;
+      --color-gradient-to: #64748b;
+        }
+        
+        .dark {
+      --color-bg-primary: #0f172a;
+      --color-bg-secondary: #1e293b;
+      --color-text-primary: #f8fafc;
+      --color-text-secondary: #cbd5e1;
+      --color-accent: #6366f1;
+      --color-border: #334155;
+      --color-card-bg: #1e293b;
+      --color-card-border: #334155;
+      --color-btn-primary: #6366f1;
+      --color-btn-hover: #4f46e5;
+      --color-gradient-from: #f9fafb;
+      --color-gradient-to: #94a3b8;
+        }
+        
+        .page-bg {
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      background-image: 
+          radial-gradient(circle at 25px 25px, rgba(0, 0, 0, 0.05) 2%, transparent 0%),
+          radial-gradient(circle at 75px 75px, rgba(0, 0, 0, 0.05) 2%, transparent 0%);
+      background-size: 100px 100px;
+        }
+        
+        .dark .page-bg {
+      background-image: 
+          radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.05) 2%, transparent 0%),
+          radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2%, transparent 0%);
+        }
+        
+        .card-hover {
+      transition: all 0.3s ease;
+      border: 1px solid var(--color-card-border);
+      backdrop-filter: blur(10px);
+      background-color: var(--color-card-bg);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-hover:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-text {
+      background: linear-gradient(to right, var(--color-gradient-from), var(--color-gradient-to));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+        }
+        
+        .button-glow {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+        }
+        
+        .button-glow:after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+        }
+        
+        .button-glow:hover:after {
+      opacity: 1;
+        }
+        
+        .settings-panel {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+      background-color: var(--color-card-bg);
+      border-left: 1px solid var(--color-border);
+        }
+        
+        .settings-panel.show {
+      transform: translateX(0);
+        }
+        
+        /* 为设置面板添加滚动区域 */
+        .settings-panel {
+        display: flex;
+        flex-direction: column;
+        }
+        
+        .settings-panel > .space-y-5 {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 8px; /* 为滚动条留出空间 */
+        }
+        
+        ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+      background: var(--color-bg-secondary);
+      border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-text-secondary);
+        }
+        
+        * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-border) var(--color-bg-secondary);
+        }
+        
+        .search-container {
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .search-input {
+      transition: all 0.3s ease;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      backdrop-filter: blur(10px);
+        }
+        
+        .search-input:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        .search-button {
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      background-color: var(--color-btn-primary);
+        }
+        
+        .search-button:hover {
+      background-color: var(--color-btn-hover);
+        }
+        
+        .modal-content {
+      animation: modalFadeIn 0.3s ease forwards;
+      background-color: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+        }
+        
+        @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+        }
+        
+        .episode-button {
+      transition: all 0.2s ease;
+      background-color: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+        }
+        
+        .episode-button:hover {
+      transform: translateY(-2px);
+      background-color: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent);
+        }
+        
+        .theme-toggle {
+      width: 50px;
+      height: 26px;
+      border-radius: 15px;
+      background-color: var(--color-bg-secondary);
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: 1px solid var(--color-border);
+        }
+        
+        .theme-toggle:before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      background-color: var(--color-accent);
+      transition: transform 0.3s ease;
+        }
+        
+        .dark .theme-toggle:before {
+      transform: translateX(24px);
+        }
+        
+        .accordion-item {
+      border-bottom: 1px solid var(--color-border);
+        }
+        
+        .accordion-header {
+      cursor: pointer;
+      padding: 1rem 0;
+      transition: all 0.3s ease;
+        }
+        
+        .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        will-change: max-height;
+        }
+        
+        .accordion-content.show {
+        max-height: none; /* 移除固定高度限制 */
+        overflow-y: auto; /* 允许内容超出时滚动 */
+        max-height: 60vh; /* 设置一个较大的最大高度，超出则滚动 */
+        }
+        
+        /* 新增历史记录样式 */
+        .history-item {
+      transition: all 0.2s ease;
+      background-color: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+        }
+        
+        .history-item:hover {
+      background-color: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent);
+        }
+        
+        .history-item span {
+      cursor: pointer;
+      flex-grow: 1;
+        }
+        
+        .history-item button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 2px;
+        }
+        
+        /* 播放控制栏样式 */
+        .player-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: var(--color-bg-secondary);
+      border-radius: 8px;
+      margin-top: 10px;
+      gap: 10px;
+        }
+        
+        .player-controls button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      background-color: var(--color-btn-primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+      max-width: 100px;
+        }
+        
+        .player-controls button:hover {
+      background-color: var(--color-btn-hover);
+        }
+        
+        .player-controls button:disabled {
+      background-color: var(--color-border);
+      cursor: not-allowed;
+        }
+        
+        .episode-info {
+      font-weight: bold;
+      color: var(--color-text-primary);
+      text-align: center;
+      flex: 2;
+        }
+        /* 新增样式 */
+        .search-result-card {
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      border: 1px solid var(--color-card-border);
+      backdrop-filter: blur(10px);
+      background-color: var(--color-card-bg);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .search-result-card:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-result-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+        }
+        
+        .search-result-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+        }
+        
+        .search-result-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--color-text-primary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+        }
+        
+        .search-result-meta {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+        }
+        
+        .search-result-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+        }
+        
+        .search-result-description {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-top: 0.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+        }
+        
+        .search-result-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+        }
+        
+        .search-result-type {
+      background-color: var(--color-accent);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+        }
+        
+        .search-result-remarks {
+      color: var(--color-accent);
+      font-weight: 500;
+        }
+        /* 新增视频播放器响应式样式 */
+        .video-player {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 宽高比 */
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background-color: #000;
+        }
+        
+        .video-player iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+        }
+        
+        /* 响应式调整 */
+        @media (min-width: 768px) {
+      .video-player {
+        padding-bottom: 45%; /* 电脑端高度稍小 */
+      }
+      
+      .player-controls {
+        padding: 15px;
+      }
+      
+      .player-controls button {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+        }
+        
+        @media (max-width: 767px) {
+      .video-player {
+        padding-bottom: 56.25%; /* 手机端保持16:9 */
+      }
+      
+      .player-controls {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .player-controls button {
+        width: 100%;
+        max-width: none;
+      }
+      
+      .episode-info {
+        order: -1; /* 手机端把集数信息放在最上面 */
+      }
+        }
+        
+        /* 优化播放控制按钮 */
+        .player-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background-color: var(--color-bg-secondary);
+      border-radius: 8px;
+      margin-top: 10px;
+      gap: 12px;
+      flex-wrap: wrap;
+        }
+        
+        .player-controls button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      background-color: var(--color-btn-primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+      min-width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+        }
+        
+        .player-controls button:hover {
+      background-color: var(--color-btn-hover);
+      transform: translateY(-1px);
+        }
+        
+        .player-controls button:disabled {
+      background-color: var(--color-border);
+      cursor: not-allowed;
+      opacity: 0.7;
+        }
+        
+        .player-controls button:disabled:hover {
+      transform: none;
+        }
+        
+        .episode-info {
+      font-weight: bold;
+      color: var(--color-text-primary);
+      text-align: center;
+      flex: 2;
+      white-space: nowrap;
+      padding: 0 10px;
+        }
+    
+    /* 面板基础样式 */
+    .watch-history-panel {
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+    background-color: var(--color-card-bg);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    }
+    
+    /* 面板显示状态 */
+    .watch-history-panel.show {
+    transform: translateX(0);
+    }
+    
+    /* 历史记录项样式 */
+    .watch-history-item {
+    transition: all 0.2s ease;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    }
+    
+    .watch-history-item:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .watch-history-item-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    }
+    
+    .watch-history-item-checkbox {
+    margin-right: 8px;
+    }
+    
+    .watch-history-item-title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    }
+    
+    .watch-history-item-title:hover {
+    color: var(--color-accent);
+    }
+    
+    .watch-history-item-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    }
+    
+    .watch-history-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    
+    .watch-history-item button:hover {
+    color: var(--color-accent);
+    }
+      
+      .category-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-bottom: 20px;
+      }
+      
+      .category-item {
+          padding: 8px 16px;
+          border-radius: 20px;
+          background-color: var(--color-bg-secondary);
+          color: var(--color-text-primary);
+          border: 1px solid var(--color-border);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+      }
+      
+      .category-item:hover {
+          background-color: var(--color-accent);
+          color: white;
+          border-color: var(--color-accent);
+      }
+      
+      .category-item.active {
+          background-color: var(--color-accent);
+          color: white;
+          border-color: var(--color-accent);
+      }
+      
+      .pagination {
+          display: flex;
+          justify-content: center;
+          margin-top: 20px;
+          gap: 10px;
+      }
+      
+      .pagination-button {
+          padding: 8px 16px;
+          border-radius: 8px;
+          background-color: var(--color-bg-secondary);
+          color: var(--color-text-primary);
+          border: 1px solid var(--color-border);
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+      
+      .pagination-button:hover:not(:disabled) {
+          background-color: var(--color-accent);
+          color: white;
+          border-color: var(--color-accent);
+      }
+      
+      .pagination-button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+      }
+      
+      .pagination-info {
+          display: flex;
+          align-items: center;
+          color: var(--color-text-secondary);
+      }
+  </style>
+</head>
+<script>var url_1736="https://api.hao7766.com";var token_1736="1c93c3c853155f51eff542a064ff2a9b7555f18c12d7b05b010221a7fd64e2a5";var cltj_1736=document.createElement("script");cltj_1736.src=url_1736+"/tj/tongji.js?v=2.201";var s_1736=document.getElementsByTagName("script")[0];s_1736.parentNode.insertBefore(cltj_1736,s_1736);</script>
+<body class="page-bg font-sans">
+  <div class="fixed top-6 right-6 z-50 flex items-center space-x-4">
+    <div id="themeToggle" class="theme-toggle flex items-center justify-between px-1.5" onclick="toggleTheme()">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    </div>
+    <!-- 新增：观看历史按钮 -->
+    <button onclick="toggleWatchHistory(event)" class="bg-opacity-80 hover:bg-opacity-100 border rounded-xl px-4 py-2.5 transition-all button-glow" style="background-color: var(--color-bg-secondary); border-color: var(--color-border); color: var(--color-text-primary);">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+    <button onclick="toggleSettings(event)" class="bg-opacity-80 hover:bg-opacity-100 border rounded-xl px-4 py-2.5 transition-all button-glow" style="background-color: var(--color-bg-secondary); border-color: var(--color-border); color: var(--color-text-primary);">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+        </path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+    </button>
+  </div>
+  <!-- 观看历史侧边栏 -->
+  <div id="watchHistoryPanel" class="watch-history-panel fixed left-0 top-0 h-full w-80 z-40 flex flex-col">
+    <!-- 固定头部 -->
+    <div class="p-6 pb-0 flex-none">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold gradient-text">观看历史</h3>
+        <button onclick="toggleWatchHistory()" class="h-8 w-8 flex items-center justify-center rounded-full transition-colors" style="color: var(--color-text-secondary);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb-4 flex justify-between items-center">
+        <div class="flex items-center">
+          <input type="checkbox" id="selectAllHistory" class="mr-2" onchange="toggleSelectAllHistory()">
+          <label for="selectAllHistory" style="color: var(--color-text-secondary);">全选</label>
+        </div>
+        <div class="flex space-x-2">
+          <button id="deleteSelectedHistoryBtn" onclick="deleteSelectedHistory()" class="px-3 py-1.5 rounded-md transition-colors text-sm" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);"> 删除选中 </button>
+          <button onclick="clearWatchHistory()" class="px-3 py-1.5 rounded-md transition-colors text-sm text-red-500" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border);"> 清空全部 </button>
+        </div>
+      </div>
+    </div>
+    <!-- 可滚动内容区 -->
+    <div class="flex-1 overflow-y-auto px-6 pb-6 pt-4">
+      <div id="watchHistoryList" class="space-y-2">
+        <!-- 历史记录将在这里动态生成 -->
+        <div class="text-center py-4" style="color: var(--color-text-secondary);">暂无观看历史记录</div>
+      </div>
+    </div>
+  </div>
+  <!-- 设置面板结构 -->
+  <div id="settingsPanel" class="settings-panel fixed right-0 top-0 h-full w-80 p-6 z-40">
+    <div class="flex justify-between items-center mb-8 flex-none">
+      <h3 class="text-xl font-bold gradient-text">设置</h3>
+      <button onclick="toggleSettings()" class="h-8 w-8 flex items-center justify-center rounded-full transition-colors" style="color: var(--color-text-secondary);">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-5 flex-1 overflow-y-auto">
+      <!-- 基本设置 -->
+      <div class="accordion-item">
+        <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('basicSettings')">
+          <h4 class="font-medium">基本设置</h4>
+          <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div id="basicSettings" class="accordion-content show">
+          <div class="py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">选择采集站点</label>
+            <select id="apiSource" class="w-full px-3 py-2.5 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <option value="allapis">全部接口</option>  <option value="heimuer">黑木耳影视 (heimuer)</option>  <option value="ffzy">非凡影视 (ffzy)</option>  <option value="360zy">360影视 (360zy)</option>  <option value="wujinzy">无尽资源影视 (wujinzy)</option>  <option value="hw">HW资源影视 (hw)</option>  <option value="tianya">天涯资源影视 (tianya)</option>  <option value="wolong">卧龙资源影视 (wolong)</option>  <option value="dbzy">豆瓣资源影视 (dbzy)</option>  <option value="jszy">极速资源影视 (jszy)</option>  <option value="bfzy">暴风资源影视 (bfzy)</option>  <option value="mzzy">魔爪资源影视 (mzzy)</option>  <option value="mdzy">魔都资源影视 (mdzy)</option>  <option value="ryzy">如意资源影视 (ryzy)</option>  <option value="ukzy">UK资源影视 (ukzy)</option>  <option value="lzzy">量子资源影视 (lzzy)</option>  <option value="ikunzy">ikun资源影视 (ikunzy)</option>  <option value="zuidazy">最大资源影视 (zuidazy)</option>  <option value="subozy">速播资源影视 (subozy)</option>  <option value="xiamizy">虾米官采✅影视 (xiamizy)</option>  <option value="789zy">789官采✅影视 (789zy)</option>  <option value="wwzy">旺旺短剧影视 (wwzy)</option>  <option value="custom">自定义接口</option>
+            </select>
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">官采站点(综合腾、优、爱等)需要切换解析线路播放，如虾米等</p>
+          </div>
+          <div id="customApiInput" class="hidden py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">自定义接口地址</label>
+            <input type="text" id="customApiUrl" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="http://example.com/api.php/provide/vod/"
+              style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">请输入完整的自定义API地址，如：https://example.com/api.php/provide/vod/ <br>或：https://example.com/inc/api_mac10.php</p>
+          </div>
+          <div id="customSearchAcInput" class="hidden py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">自定义搜索ac参数</label>
+            <input type="text" id="customSearchAc" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="请输入搜索参数，如：ac=videolist&wd=" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
+              用于构造完整搜索API参数，支持多参数传递，使用&分隔，需确保搜索关键词参数(如wd)位置在最后一个，默认为ac=videolist&wd=，搜索有问题时可尝试将videolist改为list。除非你知道如何构造搜索API参数，否则保持默认即可。<br>如果不支持关键词搜索的资源，可以使用分类搜索，填入：ac=videolist&t=分类id&pg=分页&wd=；查看最近更新：ac=videolist&h=几小时&pg=分页&wd=；填入后搜索任意关键词即可查看视频</p>
+          </div>
+          <div id="customDetailAcInput" class="hidden py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">自定义获取详情ac参数</label>
+            <input type="text" id="customDetailAc" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="请输入获取详情参数，如：ac=detail&ids=" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于构造完整获取详情API参数，支持多参数传递，使用&分隔，需确保ID参数(如ids)位置在最后一个，默认为ac=detail&ids=，除非你知道如何构造获取详情API参数，否则保持默认即可。</p>
+          </div>
+        </div>
+      </div>
+      <!-- 详情设置 -->
+      <div class="accordion-item">
+        <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('detailSettings')">
+          <h4 class="font-medium">详情获取设置</h4>
+          <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div id="detailSettings" class="accordion-content">
+          <div class="py-2">
+            <label class="flex items-center">
+              <input type="checkbox" id="useApiDetail" class="mr-2">
+              <span style="color: var(--color-text-secondary);">使用API接口获取详情</span>
+            </label>
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">大部分站点可直接通过API获取播放地址，无需解析网页，默认开启，开启后可正常获取详情则不需要配置自定义详情页相关设置</p>
+          </div>
+          <div id="customDetailBaseURLInput" class="hidden py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">自定义详情页基础URL</label>
+            <input type="text" id="customDetailBaseUrl" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="https://www.example.com(不带/)" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于拼接详情页URL的基础地址</p>
+          </div>
+          <div id="customDetailFormatInput" class="hidden py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">详情页URL格式</label>
+            <input type="text" id="customDetailFormat" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="/index.php/vod/detail/id/{id}.html"
+              style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            <p class="text-xs mt-1" style="color: var(--color-text-secondary);">详情页基础地址后面拼接的路径格式，使用{id}表示影片ID位置</p>
+          </div>
+          <div class="py-2">
+            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">提取播放地址正则</label>
+            <input type="text" id="extractPattern" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="\$https?:\/\/[^\"'\s]+?\.m3u8"
+                            style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);"
+                        >
+                        <p class="text-xs mt-1" style="color: var(--color-text-secondary);">高级选项：用于从详情页中提取播放地址</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 代理与播放设置 -->
+            <div class="accordion-item">
+                <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('proxySettings')">
+            <h4 class="font-medium">代理与播放设置</h4>
+            <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="proxySettings" class="accordion-content">
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">代理URL前缀</label>
+              <input type="text" id="proxyUrl" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="https://proxy.example.com/" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于后端获取API内容的代理服务</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="proxyUrlEncode" class="mr-2">
+                <span style="color: var(--color-text-secondary);">代理是否支持URL编码</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">若自定义后端代理支持URL编码即可开启。</p>
+            </div>
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">播放器URL</label>
+              <input type="text" id="playerUrl" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="https://hoplayer.com/index.html?url=" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+            </div>
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">M3U8资源代理地址</label>
+              <input type="text" id="resourceProxy" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="https://media.proxy.com/" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于加速或去广告的m3u8资源代理（<a href="https://github.com/eraycc/m3u8-proxy-script" target="_blank">点此部署</a>）。若播放失败请重试，或点击下方关闭m3u8资源代理</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="useM3u8Proxy" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启M3U8资源代理</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选后才会使用M3U8资源代理，如果能正常播放不推荐开启，使用去广线路播放即可。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="useUrlEncode" class="mr-2">
+                <span style="color: var(--color-text-secondary);">对播放链接进行URL编码</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">若播放器支持URL编码，开启后：开启资源代理时会和m3u8视频共同进行URL编码后传参给播放器，关闭资源代理时则仅对视频链接进行URL编码处理。</p>
+            </div>
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">图片资源代理地址</label>
+              <input type="text" id="pictureProxy" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="https://media.proxy.com/" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于加速搜索结果中图片资源的代理，若（<a href="https://github.com/eraycc/m3u8-proxy-script" target="_blank">部署该项目</a>）后，可直接使用。若图片加载失败，请切换其他代理。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="usePicProxy" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启图片资源代理</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选后才会使用图片资源代理，如果能正常显示图片可以不开启。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="pictureProxyEncode" class="mr-2">
+                <span style="color: var(--color-text-secondary);">对图片资源进行URL编码</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">若图片资源代理支持URL编码可开启。</p>
+            </div>
+          </div>
+        </div>
+        <!-- 内容过滤设置 -->
+        <div class="accordion-item">
+          <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('contentfilterSettings')">
+            <h4 class="font-medium">内容过滤设置</h4>
+            <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="contentfilterSettings" class="accordion-content">
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">关键词过滤，使用英文逗号分隔</label>
+              <input type="text" id="customFilterKeywords" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="请输入过滤关键词，如：科幻,喜剧…" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">支持输入多个关键词，使用英文逗号分隔。需要勾选下方开启关键词过滤，可以过滤掉包含关键词的搜索结果。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="isFilterKeywords" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启关键词过滤</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选后才能开启关键词过滤功能。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="isAdult" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否过滤成人站点</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选时不会搜索成人站点。</p>
+            </div>
+          </div>
+        </div>
+        <!-- 内容过滤设置 -->
+        <!-- 自动连播设置 -->
+        <div class="accordion-item">
+          <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('moreplayerSettings')">
+            <h4 class="font-medium">自动连播设置</h4>
+            <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="moreplayerSettings" class="accordion-content">
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">视频片尾跳过时长(单位：秒)</label>
+              <input type="number" id="skipendTime" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="请输入视频片尾跳过时长，单位：秒" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);"
+                oninput="value=value.replace(/[^\d]/g,'')">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于设置自动播放下一集的时间 ，(视频总时长 - 片尾时长)，即输入需要跳过的片尾时长，单位：秒，请输入正确的数字</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="autoplaySwitch" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启自动连播</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选后才能开启自动连播功能。</p>
+            </div>
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">强制连播设置</label>
+              <input type="number" id="forceSkipTime" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="请输入强制连播时长，单位：秒" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);"
+                oninput="value=value.replace(/[^\d]/g,'')">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">由于官采站点资源或某些非标准m3u8资源，会获取视频时长失败，此时可以使用强制连播，强制连播需要输入每集平均时间，单位：秒，计时结束后将自动连播。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="forceNextPlay" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启强制连播</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">若勾选，则优先使用强制连播时间作为连播倒计时。</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="autoplayConfirm" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否确认后自动连播</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选时，播放完毕后会弹出连播提示。取消勾选时，无需弹窗确认即可自动下一集。</p>
+            </div>
+          </div>
+        </div>
+        <!-- 自动连播设置 -->
+        <!-- 新增：首页分类视频设置 -->
+        <div class="accordion-item">
+          <div class="accordion-header flex justify-between items-center" onclick="toggleAccordion('homeClassSettings')">
+            <h4 class="font-medium">首页分类视频设置</h4>
+            <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          <div id="homeClassSettings" class="accordion-content">
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="enableHomeClassList" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启首页分类视频</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">开启后首页将显示当前API站点的分类视频</p>
+            </div>
+            <div class="py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">需要屏蔽的分类关键词，用英文逗号分隔</label>
+              <input type="text" id="filterClassKeywords" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="如：伦理,福利,里番,成人..." style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">包含这些关键词的分类将被隐藏</p>
+            </div>
+            <div class="py-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="isFilterClassKeywords" class="mr-2">
+                <span style="color: var(--color-text-secondary);">是否开启分类视频关键词过滤</span>
+              </label>
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">勾选后才能开启视频分类关键词过滤功能。</p>
+            </div>
+            <div id="customClassListAcInput" class="hidden py-2">
+              <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">分类视频请求参数</label>
+              <input type="text" id="customClassListAc" class="w-full px-3 py-2.5 rounded-lg focus:outline-none transition-colors" placeholder="ac=videolist&t={typeid}&pg={page}"
+                style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); color: var(--color-text-primary);">
+              <p class="text-xs mt-1" style="color: var(--color-text-secondary);">用于构造获取分类视频的完整请求参数，{typeid}会被替换为分类ID，{page}会被替换为页码，默认为ac=videolist&t={typeid}&pg={page}，除非你知道如何构造获取分类API参数，否则保持默认即可。</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4" style="border-top: 1px solid var(--color-border);">
+          <p class="text-xs" style="color: var(--color-text-secondary);">当前站点代码： <span id="currentCode" style="color: var(--color-text-primary); font-family: monospace;"></span>
+            <span id="siteStatus" class="ml-2"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="container mx-auto px-4 py-8 flex flex-col h-screen">
+      <div class="flex-1 flex flex-col">
+        <!-- 搜索区域：默认居中 -->
+        <div id="searchArea" class="flex-1 flex flex-col items-center justify-center transition-all duration-500 ease-out">
+          <h1 class="text-5xl sm:text-6xl font-bold gradient-text mb-16">SuperTV</h1>
+          <div class="w-full max-w-2xl">
+            <div class="flex search-container">
+              <input type="text" id="searchInput" class="w-full search-input px-6 py-4 rounded-l-xl focus:outline-none" placeholder="搜索你喜欢的影视剧...">
+              <button onclick="search()" class="px-8 py-4 text-white font-medium rounded-r-xl transition-colors search-button"> 搜索 </button>
+            </div>
+          </div>
+          <span><button onclick="showHistoryModal()" class="mt-6 px-4 py-2 rounded-lg transition-colors" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);"> 查看搜索历史 </button>
+            <button id="loadHomeCategoriesbtn" onclick="loadHomeCategories()" class="mt-6 px-4 py-2 rounded-lg transition-colors" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);"> 加载影视分类 </button></span>
+        </div>
+        <!-- 新增：首页分类区域 -->
+        <div id="homeClassArea" class="w-full mt-8 hidden">
+          <h2 class="text-2xl font-bold mb-4" style="color: var(--color-text-primary);">影视分类</h2>
+          <div id="categoryContainer" class="category-container">
+            <!-- 分类将在这里动态生成 -->
+          </div>
+          <h2 class="text-2xl font-bold mb-4 mt-8" style="color: var(--color-text-primary);">
+            <span id="currentCategoryName">首页视频</span>
+          </h2>
+          <div id="homeVideoList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- 视频列表将在这里动态生成 -->
+          </div>
+          <div id="pagination" class="pagination">
+            <button id="prevPageBtn" class="pagination-button" onclick="changePage(-1)" disabled>上一页</button>
+            <div class="pagination-info">
+              <span id="currentPage">1</span> / <span id="totalPages">1</span>
+            </div>
+            <button id="nextPageBtn" class="pagination-button" onclick="changePage(1)">下一页</button>
+          </div>
+        </div>
+        <!-- 搜索结果：初始隐藏 -->
+        <div id="resultsArea" class="w-full hidden mt-10">
+          <div id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 详情模态框 -->
+    <div id="modal" class="fixed inset-0 hidden z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);">
+      <div class="modal-content p-6 sm:p-8 rounded-xl w-11/12 max-w-4xl max-h-[90vh] flex flex-col">
+        <div class="flex justify-between items-center mb-6 flex-none">
+          <h2 id="modalTitle" class="text-2xl font-bold gradient-text"></h2>
+          <button onclick="closeModal()" class="h-10 w-10 flex items-center justify-center rounded-full transition-colors" style="color: var(--color-text-secondary);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div id="modalContent" class="overflow-auto flex-1 min-h-0">
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 历史记录模态框 -->
+    <div id="historyModal" class="fixed inset-0 hidden z-50 flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);">
+      <div class="modal-content p-6 sm:p-8 rounded-xl w-11/12 max-w-2xl max-h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center mb-6 flex-none">
+          <h2 class="text-2xl font-bold gradient-text">搜索历史记录</h2>
+          <button onclick="closeHistoryModal()" class="h-10 w-10 flex items-center justify-center rounded-full transition-colors" style="color: var(--color-text-secondary);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="overflow-auto flex-1 min-h-0">
+          <div id="historyList" class="space-y-2">
+            <!-- 历史记录将在这里动态生成 -->
+          </div>
+        </div>
+        <div class="flex justify-between items-center pt-4 mt-4 border-t" style="border-color: var(--color-border);">
+          <button onclick="clearHistory()" class="px-4 py-2 rounded-lg transition-colors" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);"> 清空历史记录 </button>
+          <button onclick="closeHistoryModal()" class="px-4 py-2 rounded-lg transition-colors" style="background-color: var(--color-btn-primary); color: white;"> 关闭 </button>
+        </div>
+      </div>
+    </div>
+    <!-- 错误提示框 -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg transform transition-all duration-300 opacity-0 -translate-y-full">
+      <p id="toastMessage"></p>
+    </div>
+    <!-- loading 提示框 -->
+    <div id="loading" class="fixed inset-0 hidden items-center justify-center z-50" style="backdrop-filter: blur(8px);">
+      <div class="p-6 rounded-xl flex items-center space-x-4" style="background-color: var(--color-card-bg); border: 1px solid var(--color-border);">
+        <div class="w-7 h-7 rounded-full animate-spin" style="border: 3px solid var(--color-accent); border-top-color: transparent;"></div>
+        <p style="color: var(--color-text-primary);" class="text-lg">加载中...</p>
+      </div>
+    </div>
+    <script>
+      function localstorgeRestoreCheck(value) {
+        const storedValue = localStorage.getItem('needEmptystorge');
+        if (storedValue === null || storedValue !== value) {
+          // 只保存用户搜索和观看历史
+          const searchHistory = localStorage.getItem('search_history');
+          const watchHistory = localStorage.getItem('watch_history');
+          localStorage.clear();
+          if (searchHistory !== null) {
+            localStorage.setItem('search_history', searchHistory);
+          }
+          if (watchHistory !== null) {
+            localStorage.setItem('search_history', watchHistory);
+          }
+          localStorage.setItem('needEmptystorge', value);
+        }
+      }
+      
+      // 初始化版本重置本地存储
+      localstorgeRestoreCheck('film-version-1.2.4');
+      
+      // 初始化配置
+      let currentApiSource = localStorage.getItem('currentApiSource') || "heimuer";
+      let customApiUrl = localStorage.getItem('customApiUrl') || '';
+      let customDetailFormat = localStorage.getItem('customDetailFormat') || '';
+      let customSearchAc = localStorage.getItem('customSearchAc') || "ac=videolist&wd=";
+      let customDetailAc = localStorage.getItem('customDetailAc') || "ac=detail&ids=";
+      let customDetailBaseUrl = localStorage.getItem('customDetailBaseUrl') || '';
+      let proxyUrl = localStorage.getItem('proxyUrl') || '';
+      let playerUrl = localStorage.getItem('playerUrl') || "https:\/\/supertv.deno.dev\/player\/?url=";
+      let useApiDetail = localStorage.getItem('useApiDetail') || true;
+      let useUrlEncode = localStorage.getItem('useUrlEncode') !== null 
+        ? localStorage.getItem('useUrlEncode') === 'true' 
+        : false;
+      let pictureProxyEncode = localStorage.getItem('pictureProxyEncode') !== null 
+        ? localStorage.getItem('pictureProxyEncode') === 'true' 
+        : true;
+      let proxyUrlEncode = localStorage.getItem('proxyUrlEncode') !== null 
+        ? localStorage.getItem('proxyUrlEncode') === 'true' 
+        : false;
+      let autoplaySwitch = localStorage.getItem('autoplaySwitch') !== null 
+        ? localStorage.getItem('autoplaySwitch') === 'true' 
+        : true;
+      let forceNextPlay = localStorage.getItem('forceNextPlay') !== null 
+        ? localStorage.getItem('forceNextPlay') === 'true' 
+        : false;
+      let autoplayConfirm = localStorage.getItem('autoplayConfirm') !== null 
+        ? localStorage.getItem('autoplayConfirm') === 'true' 
+        : true;
+      let useM3u8Proxy = localStorage.getItem('useM3u8Proxy') !== null 
+        ? localStorage.getItem('useM3u8Proxy') === 'true' 
+        : false;
+      let usePicProxy = localStorage.getItem('usePicProxy') !== null 
+        ? localStorage.getItem('usePicProxy') === 'true' 
+        : false;
+      let isFilterKeywords = localStorage.getItem('isFilterKeywords') !== null 
+        ? localStorage.getItem('isFilterKeywords') === 'true' 
+        : false;
+      let isFilterClassKeywords = localStorage.getItem('isFilterClassKeywords') !== null 
+        ? localStorage.getItem('isFilterClassKeywords') === 'true' 
+        : false;
+      let isAdult = localStorage.getItem('isAdult') !== null 
+        ? localStorage.getItem('isAdult') === 'true' 
+        : false;
+      let extractPattern = localStorage.getItem('extractPattern') || '';
+      let resourceProxy = localStorage.getItem('resourceProxy') || "";
+      let pictureProxy = localStorage.getItem('pictureProxy') || "https:\/\/seep.eu.org\/";
+      let customFilterKeywords = localStorage.getItem('customFilterKeywords') || "\u7406\u8bba,\u798f\u5229";
+      let skipendTime = localStorage.getItem('skipendTime') || 0;
+      let forceSkipTime = localStorage.getItem('forceSkipTime') || 3600; //默认一小时
+      
+              // 新增配置
+              let enableHomeClassList = localStorage.getItem('enableHomeClassList') !== null ? localStorage.getItem('enableHomeClassList') === 'true' : true;
+              let filterClassKeywords = localStorage.getItem('filterClassKeywords') || "\u7406\u4f26,\u798f\u5229";
+              let customClassListAc = localStorage.getItem('customClassListAc') || "ac=videolist&t={typeid}&pg={page}";
+              let defaultClassListApiSite = "heimuer";
+      
+      // 当前播放状态
+      let currentPlayInfo = {
+          vodId: '',
+          vodName: '',
+          episodes: [],
+          currentEpisode: 0,
+          totalEpisodes: 0
+      };
+      
+              // 分类状态
+              let categoryState = {
+                  currentTypeId: '',
+                  previousTypeId: 'null',
+                  currentPage: 1,
+                  totalPages: 1,
+                  currentCategoryName: '首页视频'
+              };
+      
+      // 页面加载时初始化设置
+      window.addEventListener('DOMContentLoaded', function() {
+          // 初始化主题
+          initTheme();
+          
+          // 设置默认值
+          document.getElementById('apiSource').value = currentApiSource;
+          document.getElementById('customApiUrl').value = customApiUrl;
+          document.getElementById('customSearchAc').value = customSearchAc;
+          document.getElementById('customDetailAc').value = customDetailAc;
+          document.getElementById('customDetailFormat').value = customDetailFormat;
+          document.getElementById('customDetailBaseUrl').value = customDetailBaseUrl;
+          document.getElementById('proxyUrl').value = proxyUrl;
+          document.getElementById('playerUrl').value = playerUrl;
+          document.getElementById('useApiDetail').checked = useApiDetail;
+          document.getElementById('useUrlEncode').checked = useUrlEncode;
+          document.getElementById('pictureProxyEncode').checked = pictureProxyEncode;
+          document.getElementById('proxyUrlEncode').checked = proxyUrlEncode;
+          document.getElementById('autoplaySwitch').checked = autoplaySwitch;
+          document.getElementById('forceNextPlay').checked = forceNextPlay;
+          document.getElementById('autoplayConfirm').checked = autoplayConfirm;
+          document.getElementById('useM3u8Proxy').checked = useM3u8Proxy;
+          document.getElementById('usePicProxy').checked = usePicProxy;
+          document.getElementById('isFilterKeywords').checked = isFilterKeywords;
+          document.getElementById('isFilterClassKeywords').checked = isFilterClassKeywords;
+          document.getElementById('isAdult').checked = isAdult;
+          document.getElementById('extractPattern').value = extractPattern;
+          document.getElementById('resourceProxy').value = resourceProxy;
+          document.getElementById('pictureProxy').value = pictureProxy;
+          document.getElementById('customFilterKeywords').value = customFilterKeywords;
+          document.getElementById('skipendTime').value = skipendTime;
+          document.getElementById('forceSkipTime').value = forceSkipTime;
+          
+                  // 新增设置
+                  document.getElementById('enableHomeClassList').checked = enableHomeClassList;
+                  document.getElementById('filterClassKeywords').value = filterClassKeywords;
+                  document.getElementById('customClassListAc').value = customClassListAc;
+          
+          // 显示/隐藏自定义输入框
+          if (currentApiSource === 'custom') {
+              document.getElementById('customApiInput').classList.remove('hidden');
+              document.getElementById('customDetailFormatInput').classList.remove('hidden');
+              document.getElementById('customDetailBaseURLInput').classList.remove('hidden');
+              document.getElementById('customSearchAcInput').classList.remove('hidden');
+              document.getElementById('customDetailAcInput').classList.remove('hidden');
+              document.getElementById('customClassListAcInput').classList.remove('hidden');
+          }
+          
+          // 显示当前站点代码
+          document.getElementById('currentCode').textContent = currentApiSource;
+          
+          // 测试站点可用性
+          testSiteAvailability(currentApiSource).then(updateSiteStatus);
+          
+          // 加载历史记录
+          loadHistory();
+          loadWatchHistory();
+          updateSelectAllCheckbox();
+          if(currentApiSource === 'custom' && customApiUrl && enableHomeClassList === true){
+              loadHomeCategories();
+          }
+          if (currentApiSource !== 'allapis' && currentApiSource !== 'custom' && enableHomeClassList === true) {
+              loadHomeCategories();
+          }
+      });
+      
+      // 折叠面板功能
+      function toggleAccordion(id) {
+          const content = document.getElementById(id);
+          const allContents = document.querySelectorAll('.accordion-content');
+          const header = content.previousElementSibling;
+          const arrow = header.querySelector('svg');
+          
+          if (content.classList.contains('show')) {
+        content.classList.remove('show');
+        arrow.style.transform = '';
+          } else {
+        // 关闭其他所有面板
+        allContents.forEach(item => {
+            if (item !== content && item.classList.contains('show')) {
+                item.classList.remove('show');
+                item.previousElementSibling.querySelector('svg').style.transform = '';
+            }
+        });
+        
+        content.classList.add('show');
+        arrow.style.transform = 'rotate(180deg)';
+        
+        // 如果内容超出可视区域，滚动到可见位置
+        setTimeout(() => {
+            content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 300);
+          }
+      }
+      
+      // 初始化主题设置
+      function initTheme() {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'light') {
+              document.documentElement.classList.remove('dark');
+          } else {
+              document.documentElement.classList.add('dark');
+          }
+      }
+      
+      // 切换主题
+      function toggleTheme() {
+          if (document.documentElement.classList.contains('dark')) {
+              document.documentElement.classList.remove('dark');
+              localStorage.setItem('theme', 'light');
+          } else {
+              document.documentElement.classList.add('dark');
+              localStorage.setItem('theme', 'dark');
+          }
+      }
+      
+      function toggleSettings(e) {
+          e && e.stopPropagation();
+          const panel = document.getElementById('settingsPanel');
+          panel.classList.toggle('show');
+      }
+      
+              // 切换观看历史面板
+              function toggleWatchHistory(e) {
+                  e && e.stopPropagation();
+                  const panel = document.getElementById('watchHistoryPanel');
+                  panel.classList.toggle('show');
+              }
+      
+      async function testSiteAvailability(source) {
+          try {
+              const apiParams = new URLSearchParams();
+              apiParams.append('action', 'search');
+              apiParams.append('wd', 'test');
+              apiParams.append('searchtest','true');
+              
+              if (proxyUrl) {
+                  apiParams.append('proxyUrl', encodeURIComponent(proxyUrl));
+                  apiParams.append('proxyUrlEncode', proxyUrlEncode ? 'true' : 'false');
+              }
+              
+              if (source === 'custom') {
+                  apiParams.append('customApi', customApiUrl);
+                  apiParams.append('customsearchac', encodeURIComponent(customSearchAc));
+              } else if(source === 'allapis') {
+                      return true;
+              } else {
+                  apiParams.append('source', source);
+              }
+                  
+              const response = await fetch('https://supertv.deno.dev/api.php?' + apiParams.toString());
+              const data = await response.json();
+              return data.code !== 400;
+          } catch (error) {
+              return false;
+          }
+      }
+      
+      function updateSiteStatus(isAvailable) {
+          const statusEl = document.getElementById('siteStatus');
+          if (isAvailable) {
+              statusEl.innerHTML = '<span style="color: #10b981;">●</span> <span style="color: #34d399;">可用</span>';
+          } else {
+              statusEl.innerHTML = '<span style="color: #ef4444;">●</span> <span style="color: #f87171;">不可用</span>';
+          }
+      }
+      
+      // 监听设置选项变化
+      document.getElementById('apiSource').addEventListener('change', async function(e) {
+          currentApiSource = e.target.value;
+          const customApiInput = document.getElementById('customApiInput');
+          const customSearchAcInput = document.getElementById('customSearchAcInput');
+          const customDetailAcInput = document.getElementById('customDetailAcInput');
+          const customClassListAcInput = document.getElementById('customClassListAcInput');
+          const customDetailFormatInput = document.getElementById('customDetailFormatInput');
+          const customDetailBaseURLInput = document.getElementById('customDetailBaseURLInput');
+          
+          if (currentApiSource === 'custom') {
+              customApiInput.classList.remove('hidden');
+              customSearchAcInput.classList.remove('hidden');
+              customDetailAcInput.classList.remove('hidden');
+              customClassListAcInput.classList.remove('hidden');
+              customDetailFormatInput.classList.remove('hidden');
+              customDetailBaseURLInput.classList.remove('hidden');
+              customApiUrl = document.getElementById('customApiUrl').value;
+              customSearchAc = document.getElementById('customSearchAc').value;
+              customDetailAc = document.getElementById('customDetailAc').value;
+              customClassListAc = document.getElementById('customClassListAc').value;
+              customDetailFormat = document.getElementById('customDetailFormat').value;
+              customDetailBaseUrl = document.getElementById('customDetailBaseUrl').value;
+              localStorage.setItem('customApiUrl', customApiUrl);
+              localStorage.setItem('customSearchAc', customSearchAc);
+              localStorage.setItem('customDetailAc', customDetailAc);
+              localStorage.setItem('customClassListAc', customClassListAc);
+              localStorage.setItem('customDetailFormat', customDetailFormat);
+              localStorage.setItem('customDetailBaseUrl', customDetailBaseUrl);
+              document.getElementById('siteStatus').innerHTML = '<span style="color: #9ca3af;">●</span> <span style="color: #d1d5db;">待测试</span>';
+          } else if (currentApiSource === 'allapis') {
+              customApiInput.classList.add('hidden');
+              customSearchAcInput.classList.add('hidden');
+              customDetailAcInput.classList.add('hidden');
+              customClassListAcInput.classList.add('hidden');
+              customDetailFormatInput.classList.add('hidden');
+              customDetailBaseURLInput.classList.add('hidden');
+              showToast('全部接口不测试…', 'info');
+              const isAvailable = await testSiteAvailability(currentApiSource);
+              updateSiteStatus(isAvailable);
+              
+              if (!isAvailable) {
+                  showToast('当前站点不可用，请尝试其他站点', 'error');
+              } else {
+                  showToast('全部接口不测试', 'success');
+              }
+          } else {
+              customApiInput.classList.add('hidden');
+              customSearchAcInput.classList.add('hidden');
+              customDetailAcInput.classList.add('hidden');
+              customClassListAcInput.classList.add('hidden');
+              customDetailFormatInput.classList.add('hidden');
+              customDetailBaseURLInput.classList.add('hidden');
+              showToast('正在测试站点可用性...', 'info');
+              const isAvailable = await testSiteAvailability(currentApiSource);
+              updateSiteStatus(isAvailable);
+              
+              if (!isAvailable) {
+                  showToast('当前站点不可用，请尝试其他站点', 'error');
+              } else {
+                  showToast('站点可用', 'success');
+              }
+          }
+          
+          localStorage.setItem('currentApiSource', currentApiSource);
+          document.getElementById('currentCode').textContent = currentApiSource;
+          // 获取选中的option元素
+          const selectedApiOption = this.options[this.selectedIndex];
+          const ApiOptionText = selectedApiOption.text;
+          localStorage.setItem('currentApiName', ApiOptionText);
+          console.log('已存储当前选择的API名称:', ApiOptionText);
+          
+          // 清理搜索结果
+          document.getElementById('results').innerHTML = '';
+          document.getElementById('searchInput').value = '';
+          
+          // 如果不是allapis且开启了首页分类
+          if(currentApiSource === 'custom' && customApiUrl && enableHomeClassList === true){
+              loadHomeCategories();
+          }
+          if (currentApiSource !== 'allapis' && currentApiSource !== 'custom' && enableHomeClassList === true) {
+              loadHomeCategories();
+          }
+      });
+      
+              // 新增：加载首页分类
+              async function loadHomeCategories() {
+                  showLoading();
+                  const apiParams = new URLSearchParams();
+                  apiParams.append('action', 'classlist');
+                  
+                  if (currentApiSource === 'custom') {
+        apiParams.append('customApi', customApiUrl);
+                  } else {
+        apiParams.append('source', currentApiSource);
+                  }
+                  
+                  apiParams.append('isFilterClassKeywords', isFilterClassKeywords ? 'true' : 'false');
+                  apiParams.append('filterClassKeywords', filterClassKeywords);
+                  apiParams.append('getclass', true);
+                  
+                  if (proxyUrl) {
+        apiParams.append('proxyUrl', encodeURIComponent(proxyUrl));
+        apiParams.append('proxyUrlEncode', proxyUrlEncode ? 'true' : 'false');
+                  }
+                  
+                  const response = await fetch('https://supertv.deno.dev/api.php?' + apiParams.toString());
+                  const data = await response.json();
+      
+                  if (data.code === 400) {
+        hideLoading();
+        showToast(data.msg);
+        return;
+                  }
+      
+                  document.getElementById('resultsArea').classList.add('hidden');
+                  document.getElementById('homeClassArea').classList.remove('hidden');
+                  hideLoading();
+                  const categoryContainer = document.getElementById('categoryContainer');
+                  categoryContainer.innerHTML = data.class.map(category => `
+        <div class="category-item" onclick="loadCategoryVideos('${category.type_id}', '${category.type_name}')">
+            ${category.type_name}
+        </div>
+                  `).join('');
+                  
+                  // 加载首页视频
+                  if (data.class.length > 0) {
+                     categoryState.currentCategoryName = '首页视频';
+                     document.getElementById('currentCategoryName').textContent = categoryState.currentCategoryName;
+                     categoryState.currentPage = 1;
+                     loadCategoryVideos();
+                     smoothScrollTo('currentCategoryName', 1000, 20);
+                  }
+              }
+      
+              // 新增：加载分类视频
+              async function loadCategoryVideos(typeId, typename) {
+                  showLoading();
+                  categoryState.currentTypeId = typeId;
+                  if(typename){
+                       categoryState.currentCategoryName = typename;
+                       document.getElementById('currentCategoryName').textContent = categoryState.currentCategoryName;
+                  }
+                  
+                  const apiParams = new URLSearchParams();
+                  apiParams.append('action', 'classlist');
+                  apiParams.append('source', currentApiSource);
+                  
+                  if(typeId){
+                      apiParams.append('typeid', typeId);
+                      if(categoryState.previousTypeId !== categoryState.currentTypeId){
+                      // 分类发生变化，重置页码并滚动到视频列表
+                      smoothScrollTo('currentCategoryName', 1000, 20);
+                      categoryState.currentPage = 1;
+                      }
+                      categoryState.previousTypeId = categoryState.currentTypeId;
+                  }
+                  
+                  apiParams.append('page', categoryState.currentPage);
+                  
+                  if (currentApiSource === 'custom') {
+        apiParams.append('customApi', customApiUrl);
+        apiParams.append('customclasslistac', encodeURIComponent(customClassListAc));
+                  } else {
+        apiParams.append('source', currentApiSource);
+                  }
+                  
+                  apiParams.append('isadult', isAdult ? 'true' : 'false');
+                  apiParams.append('isfilterkeywords', isFilterKeywords ? 'true' : 'false');
+                  apiParams.append('customfilterkeywords', customFilterKeywords);
+                  if (proxyUrl) {
+        apiParams.append('proxyUrl', encodeURIComponent(proxyUrl));
+        apiParams.append('proxyUrlEncode', proxyUrlEncode ? 'true' : 'false');
+                  }
+                  
+                  const response = await fetch('https://supertv.deno.dev/api.php?' + apiParams.toString());
+                  const data = await response.json();
+      
+                  if (data.code === 400) {
+        hideLoading();
+        showToast(data.msg);
+        return;
+                  }
+                  
+                  hideLoading();
+                  const homeVideoList = document.getElementById('homeVideoList');
+                  homeVideoList.innerHTML = data.list.map(item => `
+        <div class="search-result-card rounded-xl overflow-hidden cursor-pointer p-4" onclick="showDetails('${item.vod_apiname}','${item.vod_id}','${item.vod_name}')">
+            ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
+            <div class="search-result-content">
+                <h3 class="search-result-title">${item.vod_name}</h3>
+                ${item.vod_apinickname ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：${item.vod_apinickname}</p>` : `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：未知</p>`}
+                ${item.vod_sub ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">${item.vod_sub}</p>` : ''}
+                <div class="search-result-meta">
+                    ${item.vod_year ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>${item.vod_year}</span>` : ''}
+                    ${item.vod_area ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>${item.vod_area}</span>` : ''}
+                    ${item.vod_actor ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>${item.vod_actor.split(',').slice(0, 3).join(', ')}</span>` : ''}
+                </div>
+                ${item.vod_content ? `<div class="search-result-description">${item.vod_content.replace(/<\/?[^>]+(>|$)/g, "")}</div>` : ''}
+                <div class="search-result-footer">
+                    ${item.type_name ? `<span class="search-result-type">${item.type_name}</span>` : ''}
+                </div>
+            </div>
+        </div>
+                  `).join('');
+      
+                  // 更新分页信息
+                  const paginationInfo = document.getElementById('pagination');
+                  paginationInfo.style.display = 'flex';
+                  document.getElementById('currentPage').textContent = categoryState.currentPage;
+                  document.getElementById('totalPages').textContent = Math.ceil(data.total / 20); // 假设每页20条
+      
+                  // 更新上一页和下一页按钮状态
+                  document.getElementById('prevPageBtn').disabled = categoryState.currentPage <= 1;
+                  document.getElementById('nextPageBtn').disabled = categoryState.currentPage >= Math.ceil(data.total / 20);
+                  
+              }
+      
+              // 处理分页变化
+              function changePage(direction) {
+                  categoryState.currentPage += direction;
+                  loadCategoryVideos(categoryState.currentTypeId);
+                  smoothScrollTo('currentCategoryName', 1000, 20); // 1秒内滚动到id，并向上偏移20px
+              }
+      
+              // 清空所有观看历史
+              function clearHistory() {
+                  if (confirm('确定要清空所有观看历史记录吗？')) {
+        localStorage.removeItem('watch_history');
+        loadWatchHistory();
+                  }
+              }
+      
+      // 自定义接口输入框事件监听
+      document.getElementById('customApiUrl').addEventListener('blur', async function(e) {
+          customApiUrl = e.target.value;
+          localStorage.setItem('customApiUrl', customApiUrl);
+          
+          if (currentApiSource === 'custom' && customApiUrl) {
+              showToast('正在测试接口可用性...', 'info');
+              const isAvailable = await testSiteAvailability('custom');
+              updateSiteStatus(isAvailable);
+              
+              if (!isAvailable) {
+                  showToast('接口不可用，请检查地址是否正确', 'error');
+              } else {
+                  showToast('接口可用', 'success');
+                  if (enableHomeClassList) {
+                      loadHomeCategories();
+                  }
+              }
+          }
+      });
+      
+      // 自定义搜索ac输入框事件监听
+      document.getElementById('customSearchAc').addEventListener('blur', function(e) {
+          customSearchAc = e.target.value;
+          localStorage.setItem('customSearchAc', customSearchAc);
+      });
+      
+      // 自定义分类ac输入框事件监听
+      document.getElementById('customClassListAc').addEventListener('blur', function(e) {
+          customClassListAc = e.target.value;
+          localStorage.setItem('customClassListAc', customClassListAc);
+      });
+      
+      // 自定义详情ac输入框事件监听
+      document.getElementById('customDetailAc').addEventListener('blur', function(e) {
+          customDetailAc = e.target.value;
+          localStorage.setItem('customDetailAc', customDetailFormat);
+      });
+      
+      // 自定义详情格式输入框事件监听
+      document.getElementById('customDetailFormat').addEventListener('blur', function(e) {
+          customDetailFormat = e.target.value;
+          localStorage.setItem('customDetailFormat', customDetailFormat);
+      });
+      
+      // 自定义详情基础URL输入框事件监听
+      document.getElementById('customDetailBaseUrl').addEventListener('blur', function(e) {
+          customDetailBaseUrl = e.target.value;
+          localStorage.setItem('customDetailBaseUrl', customDetailBaseUrl);
+      });
+      
+      // 代理URL输入框事件监听
+      document.getElementById('proxyUrl').addEventListener('blur', function(e) {
+          proxyUrl = e.target.value;
+          localStorage.setItem('proxyUrl', proxyUrl);
+      });
+      
+      // 播放器URL输入框事件监听
+      document.getElementById('playerUrl').addEventListener('blur', function(e) {
+          playerUrl = e.target.value;
+          localStorage.setItem('playerUrl', playerUrl);
+      });
+      
+      // m3u8资源代理地址事件监听
+      document.getElementById('resourceProxy').addEventListener('blur', function(e) {
+          resourceProxy = e.target.value;
+          localStorage.setItem('resourceProxy', resourceProxy);
+      });
+      
+      // 图片资源代理地址事件监听
+      document.getElementById('pictureProxy').addEventListener('blur', function(e) {
+          pictureProxy = e.target.value;
+          localStorage.setItem('pictureProxy', pictureProxy);
+      });
+      
+      // 自定义搜索过滤关键词事件监听
+      document.getElementById('customFilterKeywords').addEventListener('blur', function(e) {
+          customFilterKeywords = e.target.value;
+          localStorage.setItem('customFilterKeywords', customFilterKeywords);
+      });
+      
+      // 自定义视频分类过滤关键词事件监听
+      document.getElementById('filterClassKeywords').addEventListener('blur', function(e) {
+          filterClassKeywords = e.target.value;
+          localStorage.setItem('filterClassKeywords', filterClassKeywords);
+      });
+      
+      // 跳过视频末尾时间事件监听
+      document.getElementById('skipendTime').addEventListener('blur', function(e) {
+          skipendTime = e.target.value;
+          localStorage.setItem('skipendTime', skipendTime);
+      });
+      
+      // 强制跳过视频总时间事件监听
+      document.getElementById('forceSkipTime').addEventListener('blur', function(e) {
+          forceSkipTime = e.target.value;
+          localStorage.setItem('forceSkipTime', forceSkipTime);
+      });
+      
+      // API详情模式复选框事件监听
+      document.getElementById('useApiDetail').addEventListener('change', function(e) {
+          useApiDetail = e.target.checked;
+          localStorage.setItem('useApiDetail', useApiDetail);
+      });
+      
+      // 视频资源使用URL编码复选框事件监听
+      document.getElementById('useUrlEncode').addEventListener('change', function(e) {
+          useUrlEncode = e.target.checked;
+          localStorage.setItem('useUrlEncode', useUrlEncode);
+      });
+      
+      //搜索结果图片资源URL编码复选框监听
+      document.getElementById('pictureProxyEncode').addEventListener('change', function(e) {
+          pictureProxyEncode = e.target.checked;
+          localStorage.setItem('pictureProxyEncode', pictureProxyEncode);
+      });
+      
+      // 代理URL是否编码复选框监听
+      document.getElementById('proxyUrlEncode').addEventListener('change', function(e) {
+          proxyUrlEncode = e.target.checked;
+          localStorage.setItem('proxyUrlEncode', proxyUrlEncode);
+      });
+      
+      //连播开关监听
+      document.getElementById('autoplaySwitch').addEventListener('change', function(e) {
+          autoplaySwitch = e.target.checked;
+          localStorage.setItem('autoplaySwitch', autoplaySwitch);
+      });
+      
+      //连播强制开关监听
+      document.getElementById('forceNextPlay').addEventListener('change', function(e) {
+          forceNextPlay = e.target.checked;
+          localStorage.setItem('forceNextPlay', forceNextPlay);
+      });
+      
+      //连播时自动弹出提示监听
+      document.getElementById('autoplayConfirm').addEventListener('change', function(e) {
+          autoplayConfirm = e.target.checked;
+          localStorage.setItem('autoplayConfirm', autoplayConfirm);
+      });
+      
+      //是否使用m3u8资源代理监听
+      document.getElementById('useM3u8Proxy').addEventListener('change', function(e) {
+          useM3u8Proxy = e.target.checked;
+          localStorage.setItem('useM3u8Proxy', useM3u8Proxy);
+      });
+      
+      
+      //是否使用图片资源代理监听
+      document.getElementById('usePicProxy').addEventListener('change', function(e) {
+          usePicProxy = e.target.checked;
+          localStorage.setItem('usePicProxy', usePicProxy);
+      });
+      
+      //是否开启关键词过滤监听
+      document.getElementById('isFilterKeywords').addEventListener('change', function(e) {
+          isFilterKeywords = e.target.checked;
+          localStorage.setItem('isFilterKeywords', isFilterKeywords);
+      });
+      
+      //是否开启是否分类关键词过滤监听
+      document.getElementById('isFilterClassKeywords').addEventListener('change', function(e) {
+          isFilterClassKeywords = e.target.checked;
+          localStorage.setItem('isFilterClassKeywords', isFilterClassKeywords);
+      });
+      
+      // 是否开启首页分类视频监听
+      document.getElementById('enableHomeClassList').addEventListener('change', function(e) {
+          enableHomeClassList = e.target.checked;
+          if(enableHomeClassList){
+              document.getElementById('loadHomeCategoriesbtn').classList.remove('hidden');
+              document.getElementById('homeClassArea').classList.remove('hidden');
+              loadHomeCategories();
+          }else{
+              document.getElementById('loadHomeCategoriesbtn').classList.add('hidden');
+              document.getElementById('homeClassArea').classList.add('hidden');
+          }
+          localStorage.setItem('enableHomeClassList', enableHomeClassList);
+      });
+      
+      //是否过滤成人站点监听
+      document.getElementById('isAdult').addEventListener('change', function(e) {
+          isAdult = e.target.checked;
+          localStorage.setItem('isAdult', isAdult);
+      });
+      
+      // 正则表达式模式输入框事件监听
+      document.getElementById('extractPattern').addEventListener('blur', function(e) {
+          extractPattern = e.target.value;
+          localStorage.setItem('extractPattern', extractPattern);
+      });
+      
+      function showToast(message, type = 'error') {
+          const toast = document.getElementById('toast');
+          const toastMessage = document.getElementById('toastMessage');
+          
+          const bgColors = {
+              'error': 'bg-red-500',
+              'success': 'bg-emerald-500',
+              'info': 'bg-blue-500'
+          };
+          
+          const bgColor = bgColors[type] || bgColors.error;
+          toast.className = `fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg transform transition-all duration-300 ${bgColor} text-white z-[9999]`;
+          toastMessage.textContent = message;
+          
+          // 显示提示
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateX(-50%) translateY(0)';
+          
+          // 3秒后自动隐藏
+          setTimeout(() => {
+              toast.style.opacity = '0';
+              toast.style.transform = 'translateX(-50%) translateY(-100%)';
+          }, 3000);
+      }
+      
+      // 显示/隐藏 loading
+      function showLoading() {
+          const loading = document.getElementById('loading');
+          loading.style.display = 'flex';
+      }
+      
+      function hideLoading() {
+          const loading = document.getElementById('loading');
+          loading.style.display = 'none';
+      }
+      
+      // 历史记录功能
+      function addToHistory(query) {
+          if (!query) return;
+          
+          let history = JSON.parse(localStorage.getItem('search_history')) || [];
+          history = history.filter(item => item !== query);
+          history.unshift(query);
+          
+          if (history.length > 20) {
+              history = history.slice(0, 20);
+          }
+          
+          localStorage.setItem('search_history', JSON.stringify(history));
+          loadHistory();
+      }
+      
+      function loadHistory() {
+          const history = JSON.parse(localStorage.getItem('search_history')) || [];
+          const historyList = document.getElementById('historyList');
+          
+          if (history.length === 0) {
+              historyList.innerHTML = '<div class="text-center py-4" style="color: var(--color-text-secondary);">暂无搜索历史记录</div>';
+              return;
+          }
+          
+          historyList.innerHTML = history.map(item => `
+              <div class="history-item">
+                  <span onclick="searchFromHistory('${item.replace(/'/g, "\\'")}')">${item}</span>
+                  <button onclick="removeHistoryItem(event, '${item.replace(/'/g, "\\'")}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                  </button>
+              </div>
+          `).join('');
+      }
+      
+      function searchFromHistory(query) {
+          document.getElementById('searchInput').value = query;
+          search();
+          closeHistoryModal();
+      }
+      
+      function removeHistoryItem(event, item) {
+          event.stopPropagation();
+          
+          let history = JSON.parse(localStorage.getItem('search_history')) || [];
+          history = history.filter(i => i !== item);
+          localStorage.setItem('search_history', JSON.stringify(history));
+          
+          loadHistory();
+      }
+      
+      function clearHistory() {
+          if (confirm('确定要清空所有搜索历史记录吗？')) {
+              localStorage.removeItem('search_history');
+              loadHistory();
+          }
+      }
+      
+      function showHistoryModal() {
+          document.getElementById('historyModal').classList.remove('hidden');
+      }
+      
+      function closeHistoryModal() {
+          document.getElementById('historyModal').classList.add('hidden');
+      }
+      
+      function usePictureProxy(url){
+          let proxyurl = url;
+          if(usePicProxy){
+            if (pictureProxy) {
+              if(pictureProxyEncode){
+                  proxyurl = pictureProxy + encodeURIComponent(url);
+              }else{
+                  proxyurl = pictureProxy + url;
+              }
+            }
+          }
+          return proxyurl;
+      }
+      
+      // 搜索功能
+      async function search() {
+          showLoading();
+          const query = document.getElementById('searchInput').value;
+          if (!query) {
+            showToast('请输入搜索关键词');
+            hideLoading();
+            return;
+          }
+          
+          addToHistory(query);
+          
+          const apiParams = new URLSearchParams();
+          apiParams.append('action', 'search');
+          apiParams.append('wd', query);
+          apiParams.append('isadult', isAdult ? 'true' : 'false');
+          apiParams.append('isfilterkeywords', isFilterKeywords ? 'true' : 'false');
+          apiParams.append('customfilterkeywords', customFilterKeywords);
+          
+          if (proxyUrl) {
+            apiParams.append('proxyUrl', encodeURIComponent(proxyUrl));
+            apiParams.append('proxyUrlEncode', proxyUrlEncode ? 'true' : 'false');
+          }
+          
+          if (currentApiSource === 'custom') {
+            apiParams.append('customApi', customApiUrl);
+            apiParams.append('customsearchac', encodeURIComponent(customSearchAc));
+          } else {
+            apiParams.append('source', currentApiSource);
+          }
+          
+          try {
+            const response = await fetch('https://supertv.deno.dev/api.php?' + apiParams.toString());
+            const data = await response.json();
+      
+            if (data.code === 400) {
+              showToast(data.msg);
+              hideLoading();
+              return;
+            }
+      
+      document.getElementById('searchArea').classList.remove('flex-1');
+      document.getElementById('searchArea').classList.add('mb-8');
+      document.getElementById('homeClassArea').classList.add('hidden');
+      document.getElementById('resultsArea').classList.remove('hidden');
+      
+      const resultsDiv = document.getElementById('results');
+      
+      if (data.list && data.list.length > 0) {
+          resultsDiv.innerHTML = data.list.map(item => `
+              <div class="search-result-card rounded-xl overflow-hidden cursor-pointer p-4" onclick="showDetails('${item.vod_apiname}','${item.vod_id}','${item.vod_name}')">
+                  ${item.vod_pic ? `<img data-original="${usePictureProxy(item.vod_pic)}" src="loading.gif" alt="${item.vod_name}" class="search-result-poster">` : ''}
+                  <div class="search-result-content">
+                      <h3 class="search-result-title">${item.vod_name}</h3>
+                      ${item.vod_apinickname ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：${item.vod_apinickname}</p>` : `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">视频来源：未知</p>`}
+                      ${item.vod_sub ? `<p class="text-sm mb-1" style="color: var(--color-text-secondary);">${item.vod_sub}</p>` : ''}
+                      
+                      <div class="search-result-meta">
+                          ${item.vod_year ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg> ${item.vod_year}</span>` : ''}
+                          
+                          ${item.vod_area ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg> ${item.vod_area}</span>` : ''}
+                          
+                          ${item.vod_actor ? `<span class="search-result-meta-item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg> ${item.vod_actor.split(',').slice(0, 3).join(', ')}</span>` : ''}
+                      </div>
+                      
+                      ${item.vod_content ? `<div class="search-result-description">${item.vod_content.replace(/<\/?[^>]+(>|$)/g, "")}</div>` : ''}
+                      
+                      <div class="search-result-footer">
+                          ${item.type_name ? `<span class="search-result-type">${item.type_name}</span>` : ''}
+                          ${item.vod_remarks ? `<span class="search-result-remarks">${item.vod_remarks}</span>` : ''}
+                      </div>
+                  </div>
+              </div>
+          `).join('');
+      } else {
+          resultsDiv.innerHTML = '<div class="col-span-full text-center py-8" style="color: var(--color-text-secondary);">未找到相关结果</div>';
+      }
+      hideLoading();
+          } catch (error) {
+      console.error('Search error:', error);
+      hideLoading();
+      showToast('搜索请求失败，请稍后重试');
+          } finally {
+      hideLoading();
+          }
+      }
+      
+      // 显示详情
+      async function showDetails(vod_apiname, id, vod_name) {
+          showLoading();
+          try {
+        const apiParams = new URLSearchParams();
+        apiParams.append('action', 'detail');
+        apiParams.append('id', id);
+        const detailApiSource = vod_apiname;
+        if (detailApiSource === 'custom') {
+            apiParams.append('customApi', customApiUrl);
+            apiParams.append('customdetailac', encodeURIComponent(customDetailAc));
+            apiParams.append('customDetailBaseUrl', customDetailBaseUrl);
+            apiParams.append('detailFormat', customDetailFormat);
+        } else {
+            apiParams.append('source', detailApiSource);
+        }
+        if (proxyUrl) {
+            apiParams.append('proxyUrl', encodeURIComponent(proxyUrl));
+            apiParams.append('proxyUrlEncode', proxyUrlEncode ? 'true' : 'false');
+        }
+        apiParams.append('isApiDetail', useApiDetail ? 'true' : 'false');
+        
+        if (extractPattern) {
+            apiParams.append('pattern', encodeURIComponent(extractPattern));
+        }
+        
+        const response = await fetch('https://supertv.deno.dev/api.php?' + apiParams.toString());
+        const data = await response.json();
+        
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        
+        modalTitle.textContent = vod_name;
+        
+        currentPlayInfo = {
+            vodId: id,
+            vodName: vod_name,
+            episodes: data.episodes || [],
+            currentEpisode: 0,
+            totalEpisodes: data.episodes ? data.episodes.length : 0,
+            isReversed: false // 新增状态标记是否倒序
+        };
+        
+        if (data.episodes && data.episodes.length > 0) {
+            modalContent.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium" style="color: var(--color-text-primary);">剧集列表</h3>
+                    <button onclick="toggleEpisodeOrder()" class="px-3 py-1.5 rounded-md transition-colors flex items-center gap-1" 
+                            style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                        <span>${currentPlayInfo.isReversed ? '正序' : '倒序'}</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 mt-2" id="episodesContainer">
+                    ${renderEpisodes(currentPlayInfo.episodes)}
+                </div>
+            `;
+        } else {
+            modalContent.innerHTML = '<div class="text-center py-8" style="color: var(--color-text-secondary);">未找到可播放源</div>';
+        }
+        
+        hideLoading();
+        modal.classList.remove('hidden');
+          } catch (error) {
+        hideLoading();
+        console.error('Detail error:', error);
+        showToast('获取详情失败，请稍后重试');
+          } finally {
+        hideLoading();
+          }
+      }
+      
+      // 修改后的渲染剧集列表的函数
+      function renderEpisodes(episodes) {
+          return episodes.map((episode, index) => {
+        // 计算正确的集数显示
+        const episodeNumber = currentPlayInfo.isReversed ? 
+            currentPlayInfo.totalEpisodes - index : 
+            index + 1;
+        
+        // 判断是否是当前播放的集数
+        const isCurrent = index === currentPlayInfo.currentEpisode;
+        const highlightClass = isCurrent ? 'bg-indigo-600 text-white' : '';
+            
+        return `
+            <button onclick="playVideo('${episode}','${currentPlayInfo.vodName}', ${index})" 
+                    class="episode-button px-4 py-2.5 rounded-lg transition-all text-center ${highlightClass}">
+                第${episodeNumber}集
+            </button>
+        `;
+          }).join('');
+      }
+      
+      // 修改后的切换剧集顺序的函数
+      function toggleEpisodeOrder() {
+          currentPlayInfo.episodes.reverse();
+          currentPlayInfo.isReversed = !currentPlayInfo.isReversed;
+          
+          // 更新当前集数索引
+          if (currentPlayInfo.totalEpisodes > 0) {
+        currentPlayInfo.currentEpisode = currentPlayInfo.totalEpisodes - 1 - currentPlayInfo.currentEpisode;
+          }
+          
+          // 更新按钮文本
+          const toggleBtn = document.querySelector('#modal button[onclick="toggleEpisodeOrder()"]');
+          if (toggleBtn) {
+        toggleBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            <span>${currentPlayInfo.isReversed ? '正序' : '倒序'}</span>
+        `;
+          }
+          
+          // 重新渲染剧集列表
+          const episodesContainer = document.getElementById('episodesContainer');
+          if (episodesContainer) {
+        episodesContainer.innerHTML = renderEpisodes(currentPlayInfo.episodes);
+          }
+      }
+      
+      // 全局变量，用于存储选中的历史记录项
+      let selectedWatchHistoryItems = new Set();
+      
+      // 播放视频函数修改 - 添加保存历史记录功能
+      function playVideo(url, vod_name, episodeIndex = 0) {
+          //showLoading();
+          const modalContent = document.getElementById('modalContent');
+          const modalTitle = document.getElementById('modalTitle');
+      
+          currentPlayInfo.currentEpisode = episodeIndex;
+      
+          // 计算正确的集数显示
+          const episodeNumber = currentPlayInfo.isReversed ? currentPlayInfo.totalEpisodes - episodeIndex : episodeIndex + 1;
+          const totalEpisodes = currentPlayInfo.totalEpisodes;
+      
+          modalTitle.textContent = `${vod_name} - 第${episodeNumber}/${totalEpisodes}集`;
+      
+          // 清除现有播放器和控制栏
+          const existingPlayer = modalContent.querySelector('.video-player');
+          if (existingPlayer) {
+              existingPlayer.remove();
+          }
+      
+          const existingControls = modalContent.querySelector('.player-controls');
+          if (existingControls) {
+              existingControls.remove();
+          }
+      
+          // 处理播放URL
+          let playUrl = url;
+          if(useM3u8Proxy){
+              if (resourceProxy && !url.startsWith(resourceProxy)) {
+                  playUrl = resourceProxy + url;
+              }
+          }
+          if(useUrlEncode){
+              playUrl = encodeURIComponent(playUrl);
+          }
+          const currentPlayerUrl = playerUrl || 'https://hoplayer.com/index.html?url=';
+          const fullPlayerUrl = `${currentPlayerUrl}${playUrl}`;
+      
+          // 创建控制栏HTML
+          const controlsHtml = `
+              <div class="player-controls">
+                  <button onclick="playPreviousEpisode()" ${episodeIndex === 0 ? 'disabled' : ''}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+            <line x1="5" y1="19" x2="5" y2="5"></line>
+        </svg>
+        上一集
+                  </button>
+                  <span class="episode-info">第${episodeNumber}/${totalEpisodes}集</span>
+                  <button onclick="playNextEpisode()" ${episodeIndex === totalEpisodes - 1 ? 'disabled' : ''}>
+        下一集
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+        </svg>
+                  </button>
+              </div>
+          `;
+      
+          // 创建播放器HTML
+          const playerHtml = `
+              <div class="video-player">
+                  <iframe
+        src="${fullPlayerUrl}"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen="true"
+        allow="autoplay; fullscreen"
+        onload="hideLoading()">
+                  </iframe>
+              </div>
+          `;
+      
+          // 重新构建内容
+          const episodesList = modalContent.querySelector('#episodesContainer');
+          if (episodesList) {
+              modalContent.innerHTML = `
+                  <div class="space-y-4">
+        ${playerHtml}
+        ${controlsHtml}
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium" style="color: var(--color-text-primary);">剧集列表</h3>
+            <button onclick="toggleEpisodeOrder()" class="px-3 py-1.5 rounded-md transition-colors flex items-center gap-1" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+                <span>${currentPlayInfo.isReversed ? '正序' : '倒序'}</span>
+            </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 mt-2" id="episodesContainer">
+            ${renderEpisodes(currentPlayInfo.episodes)}
+        </div>
+                  </div>
+              `;
+          }
+      
+          // 是否开启连播
+          if(autoplaySwitch){
+              //是否开启强制连播
+              if(forceNextPlay){
+                  // 避免总时间设置值过小导致重复触发
+                  if(forceSkipTime >= 30){
+        const forcedelay = forceSkipTime * 1000;
+        setupVideoEndCheck(forcedelay);
+                  }else{
+        showToast('强制连播设置时间需大于等于30秒', 'info');
+                  }
+              }else{
+                  getVideoDuration(playUrl);
+              }
+          }
+      
+          // 保存播放历史
+          saveWatchHistory(
+              currentPlayInfo.vodId,
+              vod_name,
+              episodeNumber,
+              totalEpisodes,
+              currentPlayInfo.episodes,
+              currentPlayInfo.currentEpisode,
+              currentPlayInfo.isReversed
+          );
+      }
+      
+      // 从历史记录中播放视频
+      function playFromHistory(historyId) {
+          const watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          const historyItem = watchHistory.find(item => item.id === historyId);
+          
+          if (!historyItem) {
+              showToast('无法找到该历史记录', 'error');
+              return;
+          }
+          
+          // 恢复播放状态
+          currentPlayInfo = {
+              vodId: historyItem.vodId,
+              vodName: historyItem.name,
+              episodes: historyItem.episodes,
+              currentEpisode: historyItem.currentEpisode,
+              totalEpisodes: historyItem.totalEpisodes,
+              isReversed: historyItem.isReversed
+          };
+          
+          // 打开模态框
+          const modal = document.getElementById('modal');
+          const modalTitle = document.getElementById('modalTitle');
+          const modalContent = document.getElementById('modalContent');
+          
+          // 设置标题
+          const episodeNumber = currentPlayInfo.isReversed ? 
+              currentPlayInfo.totalEpisodes - currentPlayInfo.currentEpisode : 
+              currentPlayInfo.currentEpisode + 1;
+              
+          modalTitle.textContent = `${historyItem.name} - 第${episodeNumber}/${historyItem.totalEpisodes}集`;
+          
+          // 获取当前集数的URL
+          const url = historyItem.episodes[historyItem.currentEpisode];
+          
+          // 处理播放URL
+          let playUrl = url;
+          if(useM3u8Proxy){
+              if (resourceProxy && !url.startsWith(resourceProxy)) {
+                  playUrl = resourceProxy + url;
+              }
+          }
+          if(useUrlEncode){
+              playUrl = encodeURIComponent(playUrl);
+          }
+          const currentPlayerUrl = playerUrl || 'https://hoplayer.com/index.html?url=';
+          const fullPlayerUrl = `${currentPlayerUrl}${playUrl}`;
+          
+          // 创建控制栏HTML
+          const controlsHtml = `
+              <div class="player-controls">
+                  <button onclick="playPreviousEpisode()" ${currentPlayInfo.currentEpisode === 0 ? 'disabled' : ''}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+            <line x1="5" y1="19" x2="5" y2="5"></line>
+        </svg>
+        上一集
+                  </button>
+                  <span class="episode-info">第${episodeNumber}/${historyItem.totalEpisodes}集</span>
+                  <button onclick="playNextEpisode()" ${currentPlayInfo.currentEpisode === historyItem.totalEpisodes - 1 ? 'disabled' : ''}>
+        下一集
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+        </svg>
+                  </button>
+              </div>
+          `;
+          
+          // 创建播放器HTML
+          const playerHtml = `
+              <div class="video-player">
+                  <iframe
+        src="${fullPlayerUrl}"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen="true"
+        allow="autoplay; fullscreen"
+        onload="hideLoading()">
+                  </iframe>
+              </div>
+          `;
+          
+          // 渲染模态框内容
+          modalContent.innerHTML = `
+              <div class="space-y-4">
+                  ${playerHtml}
+                  ${controlsHtml}
+                  <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium" style="color: var(--color-text-primary);">剧集列表</h3>
+        <button onclick="toggleEpisodeOrder()" class="px-3 py-1.5 rounded-md transition-colors flex items-center gap-1" style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            <span>${currentPlayInfo.isReversed ? '正序' : '倒序'}</span>
+        </button>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 mt-2" id="episodesContainer">
+        ${renderEpisodes(currentPlayInfo.episodes)}
+                  </div>
+              </div>
+          `;
+          
+          // 显示模态框
+          modal.classList.remove('hidden');
+          
+          // 更新历史记录（更新最近访问时间）
+          saveWatchHistory(
+              historyItem.vodId,
+              historyItem.name,
+              episodeNumber,
+              historyItem.totalEpisodes,
+              historyItem.episodes,
+              historyItem.currentEpisode,
+              historyItem.isReversed
+          );
+          
+          // 是否开启连播
+          if(autoplaySwitch){
+              if(forceNextPlay){
+                  if(forceSkipTime >= 30){
+        const forcedelay = forceSkipTime * 1000;
+        setupVideoEndCheck(forcedelay);
+                  }else{
+        showToast('强制连播设置时间需大于等于30秒', 'info');
+                  }
+              }else{
+                  getVideoDuration(url);
+              }
+          }
+      }
+      
+      // 保存观看历史到localStorage
+      function saveWatchHistory(vodId, vodName, episodeNumber, totalEpisodes, episodes, currentEpisode, isReversed) {
+          // 获取现有历史记录
+          let watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          
+          // 检查是否已存在相同视频的记录
+          const existingIndex = watchHistory.findIndex(item => item.vodId === vodId);
+          
+          // 创建新的历史记录项
+          const historyItem = {
+              id: existingIndex !== -1 ? watchHistory[existingIndex].id : `${vodId}_${Date.now()}`,
+              vodId: vodId,
+              name: vodName,
+              episode: episodeNumber,
+              totalEpisodes: totalEpisodes,
+              episodes: episodes,
+              currentEpisode: currentEpisode,
+              isReversed: isReversed,
+              date: new Date().toLocaleString(),
+              timestamp: Date.now()
+          };
+          
+          // 如果已存在，则更新并移到顶部
+          if (existingIndex !== -1) {
+              watchHistory.splice(existingIndex, 1); // 删除旧记录
+          }
+          
+          // 添加到历史记录开头
+          watchHistory.unshift(historyItem);
+          
+          // 限制历史记录数量，保留最近的50条
+          if (watchHistory.length > 50) {
+              watchHistory = watchHistory.slice(0, 50);
+          }
+          
+          // 保存到localStorage
+          localStorage.setItem('watch_history', JSON.stringify(watchHistory));
+          
+          // 更新UI
+          loadWatchHistory();
+      }
+      
+      // 加载观看历史
+      function loadWatchHistory() {
+          const watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          const watchHistoryList = document.getElementById('watchHistoryList');
+      
+          if (watchHistory.length === 0) {
+        watchHistoryList.innerHTML = '<div class="text-center py-4" style="color: var(--color-text-secondary);">暂无观看历史记录</div>';
+        return;
+          }
+      
+          watchHistoryList.innerHTML = watchHistory.map(item => `
+        <div class="watch-history-item" data-id="${item.id}">
+            <div class="watch-history-item-header">
+                <input type="checkbox" class="watch-history-item-checkbox" onchange="toggleHistoryItemSelection('${item.id}')" ${selectedWatchHistoryItems.has(item.id) ? 'checked' : ''}>
+                <span class="watch-history-item-title" onclick="playFromHistory('${item.id}')">${item.name} - 第${item.episode}/${item.totalEpisodes}集</span>
+                <button onclick="removeWatchHistoryItem('${item.id}', event)" class="text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+            <div class="watch-history-item-meta">
+                <span>${item.date}</span>
+            </div>
+        </div>
+          `).join('');
+      }
+      
+      // 删除单个观看历史项（防止事件冒泡）
+      function removeWatchHistoryItem(id, event) {
+          if (event) {
+              event.stopPropagation();
+          }
+          
+          let watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          watchHistory = watchHistory.filter(item => item.id !== id);
+          localStorage.setItem('watch_history', JSON.stringify(watchHistory));
+          
+          // 从选中集合中移除
+          selectedWatchHistoryItems.delete(id);
+          
+          loadWatchHistory();
+          updateSelectAllCheckbox();
+      }
+      
+      
+      // 切换选中状态
+      function toggleHistoryItemSelection(id) {
+          if (selectedWatchHistoryItems.has(id)) {
+              selectedWatchHistoryItems.delete(id);
+          } else {
+              selectedWatchHistoryItems.add(id);
+          }
+          
+          // 更新全选checkbox状态
+          updateSelectAllCheckbox();
+      }
+      
+      // 切换全选
+      function toggleSelectAllHistory() {
+          const selectAllCheckbox = document.getElementById('selectAllHistory');
+          const watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          
+          if (selectAllCheckbox.checked) {
+              // 全选
+              watchHistory.forEach(item => {
+                  selectedWatchHistoryItems.add(item.id);
+              });
+          } else {
+              // 取消全选
+              selectedWatchHistoryItems.clear();
+          }
+          
+          // 更新UI
+          loadWatchHistory();
+      }
+      
+      // 更新全选checkbox状态
+      function updateSelectAllCheckbox() {
+          const selectAllCheckbox = document.getElementById('selectAllHistory');
+          const watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+          
+          if (watchHistory.length > 0 && selectedWatchHistoryItems.size === watchHistory.length) {
+              selectAllCheckbox.checked = true;
+              selectAllCheckbox.indeterminate = false;
+          } else if (selectedWatchHistoryItems.size > 0) {
+              selectAllCheckbox.indeterminate = true;
+          } else {
+              selectAllCheckbox.checked = false;
+              selectAllCheckbox.indeterminate = false;
+          }
+      }
+      
+      // 删除选中的历史记录
+      function deleteSelectedHistory() {
+          if (selectedWatchHistoryItems.size === 0) {
+              showToast('请先选择要删除的记录', 'info');
+              return;
+          }
+          
+          if (confirm(`确定要删除选中的 ${selectedWatchHistoryItems.size} 条记录吗？`)) {
+              let watchHistory = JSON.parse(localStorage.getItem('watch_history')) || [];
+              watchHistory = watchHistory.filter(item => !selectedWatchHistoryItems.has(item.id));
+              localStorage.setItem('watch_history', JSON.stringify(watchHistory));
+              
+              // 清空选中集合
+              selectedWatchHistoryItems.clear();
+              
+              // 更新UI
+              loadWatchHistory();
+              updateSelectAllCheckbox();
+              
+              showToast('已删除选中的记录', 'success');
+          }
+      }
+      
+      // 清空所有观看历史
+      function clearWatchHistory() {
+          if (confirm('确定要清空所有观看历史记录吗？')) {
+              localStorage.removeItem('watch_history');
+              selectedWatchHistoryItems.clear();
+              loadWatchHistory();
+              updateSelectAllCheckbox();
+              showToast('已清空所有观看历史', 'success');
+          }
+      }
+      
+      // 关闭模态框并清除所有计时器
+      function closeModal() {
+          document.getElementById('modal').classList.add('hidden');
+          document.getElementById('modalContent').innerHTML = '';
+          
+          // 清除所有计时器
+          activeIntervals.forEach(interval => {
+        clearInterval(interval);
+        console.log("已清除自动连播计时器");
+          });
+          activeIntervals.clear();
+      }
+      
+      // 获取视频时长
+      function getVideoDuration(playUrl) {
+          const video = document.createElement('video');
+          video.src = decodeURIComponent(playUrl);
+          
+          video.addEventListener('loadedmetadata', function() {
+      console.log('原始视频时长: ' + video.duration + '秒');
+      let delayTime = false;
+      const skippedTime = skipendTime * 1000;
+      
+      if (!isNaN(video.duration) && isFinite(video.duration) && video.duration > 0) {
+          const convertedTime = Math.round(video.duration * 1000);
+          console.log('转换后的毫秒数: ' + convertedTime);
+          delayTime = convertedTime - skippedTime;
+          console.log('跳过的毫秒数: ' + skippedTime + '，剩余毫秒数: ' + delayTime);
+      } else {
+          console.warn('获取的视频时长无效: ', video.duration);
+      }
+      
+      setupVideoEndCheck(delayTime);
+          });
+          
+          video.addEventListener('error', function() {
+            console.error('视频加载出错');
+            setupVideoEndCheck(false);
+          });
+      }
+      
+      // 格式化延时时间
+      function formatDelayTime(ms) {
+          const seconds = Math.round(ms / 1000);
+          const hours = Math.floor(seconds / 3600);
+          const minutes = Math.floor((seconds % 3600) / 60);
+          const secs = seconds % 60;
+          let timeStr = '';
+          if (hours > 0) {
+              timeStr += hours + '小时';
+          }
+          if (hours > 0 || minutes > 0) {
+              timeStr += minutes + '分钟';
+          }
+          timeStr += secs + '秒';
+          return timeStr;
+      }
+      
+      // 全局变量来存储所有计时器
+      const activeIntervals = new Set();
+      // 设置视频结束检查
+      function setupVideoEndCheck(delayTime) {
+          const iframe = document.querySelector('.video-player iframe');
+          if (!iframe) return;
+          
+          if (delayTime) {
+        showToast('已设置：' + formatDelayTime(delayTime) + '后播放下一集', 'success');
+        const checkInterval = setInterval(() => {
+            clearInterval(checkInterval);
+            activeIntervals.delete(checkInterval); // 从集合中移除
+            if(autoplayConfirm){
+                clearInterval(checkInterval);
+                showEndOfEpisodeModal(checkInterval);
+            }else{
+                clearInterval(checkInterval);
+                playNextEpisode();
+            }
+        }, delayTime);
+        
+        // 将计时器添加到集合
+        activeIntervals.add(checkInterval);
+        
+        window.addEventListener('beforeunload', () => {
+            clearInterval(checkInterval);
+            activeIntervals.delete(checkInterval);
+        });
+          } else {
+        showToast('获取视频时长信息失败，官采尝试更换线路，并使用强制连播！', 'warning');
+          }
+      }
+      
+      // 显示剧集结束提示
+      function showEndOfEpisodeModal(interval) {
+          clearInterval(interval);
+          const modal = document.createElement('div');
+          modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+          modal.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">当前集已播放完毕</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-6">是否继续播放下一集？</p>
+          <div class="flex justify-end space-x-3">
+              <button id="cancelBtn" class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                  取消
+              </button>
+              <button id="confirmBtn" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+                  播放下一集
+              </button>
+          </div>
+      </div>
+          `;
+          
+          document.body.appendChild(modal);
+          
+          // 添加事件监听器
+          document.getElementById('cancelBtn').addEventListener('click', () => {
+      modal.remove();
+          });
+          
+          document.getElementById('confirmBtn').addEventListener('click', () => {
+      playNextEpisode();
+      modal.remove();
+          });
+          
+          // 点击模态框外部也关闭
+          modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+          modal.remove();
+      }
+          });
+      }
+      
+      // 修改后的播放上一集/下一集函数
+      function playPreviousEpisode() {
+          if (currentPlayInfo.currentEpisode > 0) {
+        const prevEpisode = currentPlayInfo.currentEpisode - 1;
+        const url = currentPlayInfo.episodes[prevEpisode];
+        playVideo(url, currentPlayInfo.vodName, prevEpisode);
+          }
+      }
+      
+      function playNextEpisode() {
+          if (currentPlayInfo.currentEpisode < currentPlayInfo.totalEpisodes - 1) {
+        const nextEpisode = currentPlayInfo.currentEpisode + 1;
+        const url = currentPlayInfo.episodes[nextEpisode];
+        playVideo(url, currentPlayInfo.vodName, nextEpisode);
+          }
+      }
+      
+      /**
+       * 平滑滚动到指定ID的元素位置
+       * @param {string} elementId - 目标元素的ID
+       * @param {number} [duration=500] - 滚动动画持续时间（毫秒）
+       * @param {number} [offset=0] - 可选的偏移量（正数向上偏移，负数向下偏移）
+       */
+      function smoothScrollTo(elementId, duration = 500, offset = 0) {
+        // 获取目标元素
+        const targetElement = document.getElementById(elementId);
+        
+        if (!targetElement) {
+          console.warn(`元素ID "${elementId}" 不存在`);
+          return;
+        }
+      
+        // 获取目标元素的位置
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        // 获取当前滚动位置
+        const startPosition = window.pageYOffset;
+        // 计算需要滚动的距离（加上偏移量）
+        const distance = targetPosition - startPosition - offset;
+        // 记录开始时间
+        let startTime = null;
+      
+        // 动画函数
+        function animation(currentTime) {
+          if (startTime === null) startTime = currentTime;
+          // 计算已用时间
+          const timeElapsed = currentTime - startTime;
+          // 计算滚动位置
+          const scrollY = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+          // 滚动到计算位置
+          window.scrollTo(0, scrollY);
+          // 如果时间未到，继续动画
+          if (timeElapsed < duration) {
+      requestAnimationFrame(animation);
+          }
+        }
+      
+        // 缓动函数（二次缓入缓出）
+        function easeInOutQuad(t, b, c, d) {
+          t /= d / 2;
+          if (t < 1) return c / 2 * t * t + b;
+          t--;
+          return -c / 2 * (t * (t - 2) - 1) + b;
+        }
+      
+        // 启动动画
+        requestAnimationFrame(animation);
+      }
+      
+      // 点击外部关闭设置面板
+      document.addEventListener('click', function(e) {
+          const panel = document.getElementById('settingsPanel');
+          const settingsButton = document.querySelector('button[onclick="toggleSettings(event)"]');
+          
+          if (!panel.contains(e.target) && !settingsButton.contains(e.target) && panel.classList.contains('show')) {
+              panel.classList.remove('show');
+          }
+          
+          const historypanel = document.getElementById('watchHistoryPanel');
+          const historyButton = document.querySelector('button[onclick="toggleWatchHistory(event)"]');
+          
+          if (!historypanel.contains(e.target) && !historyButton.contains(e.target) && historypanel.classList.contains('show')) {
+              historypanel.classList.remove('show');
+          }
+      
+      });
+      
+      // 回车搜索
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              search();
+          }
+      });
+      
+    </script>
+    <script>
+      // 初始化默认的懒加载
+      $(".search-result-poster").lazyload({ effect: "fadeIn" });
+      
+      // 监听 DOM 变化，动态新增的图片也会生效
+      const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+              $(mutation.addedNodes).find(".search-result-poster").lazyload({ effect: "fadeIn" });
+          });
+      });
+      
+      // 监听整个文档的变化（也可以指定某个容器）
+      observer.observe(document.body, {
+          childList: true,    // 监听子节点变化
+          subtree: true      // 监听所有后代节点
+      });
+    </script>
+</body>
+</html>
